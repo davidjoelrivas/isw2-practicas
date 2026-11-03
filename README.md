@@ -7,3 +7,5 @@ Alumno: David Joel Rivas Ortega
 ## Indice
 
 - [Practica 1 - Smells y primer refactor](practica-1/)
+
+- [Practica 3 - Refactor SOLID](practica-3/)
