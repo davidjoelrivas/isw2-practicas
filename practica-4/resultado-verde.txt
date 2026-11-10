@@ -1,0 +1,11 @@
+✅ Aplica 5% con un día vencido
+✅ Aplica solo 5% aunque hayan pasado 30 días
+✅ Devuelve cero cuando hay 0 días vencidos
+✅ Devuelve cero con días negativos
+✅ Devuelve cero si el monto es cero
+✅ Lanza error si el monto es negativo
+✅ Lanza error si los días son texto
+✅ Lanza error si los días son NaN
+✅ Lanza error si no se proporciona el número de días
+
+Resultado: 9 aprobadas, 0 fallidas
