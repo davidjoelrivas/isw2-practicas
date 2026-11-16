@@ -1,17 +1,14 @@
-// Refactor en proceso: paso 1, nombres con intención.
-const infra = require('./infraestructura');
+const infraestructuraPorDefecto = require('./infraestructura');
 const UMBRAL_DESCUENTO = 500;
 const TASA_DESCUENTO = 0.1;
 const TASA_ISV = 0.15;
 const FACTOR_REDONDEO = 100;
+
 function validarPedido(pedido, cliente) {
-  if (!pedido || !Array.isArray(pedido.items)) {
-    throw new Error('Pedido inválido');
-  }
-  if (!cliente || !cliente.nombre) {
-    throw new Error('Cliente inválido');
-  }
+  if (!pedido || !Array.isArray(pedido.items)) throw new Error('Pedido inválido');
+  if (!cliente || !cliente.nombre) throw new Error('Cliente inválido');
 }
+
 function validarProducto(producto) {
   if (!producto || !producto.nombre || !Number.isInteger(producto.cantidad) || producto.cantidad <= 0) {
     throw new Error('Producto inválido');
@@ -20,25 +17,39 @@ function validarProducto(producto) {
     throw new Error('Producto inválido');
   }
 }
+
 function aplicarDescuento(total, cliente) {
   if (cliente.frecuente !== true || total < UMBRAL_DESCUENTO) return total;
   return total - total * TASA_DESCUENTO;
 }
-function procesarVenta(pedido, cliente) {
+
+function calcularVenta(pedido, cliente) {
   validarPedido(pedido, cliente);
   let total = 0;
-  let detalle = [];
+  const detalle = [];
   for (const producto of pedido.items) {
     validarProducto(producto);
-    total = total + producto.cantidad * producto.precio;
+    total += producto.cantidad * producto.precio;
     detalle.push(`${producto.nombre}: ${producto.cantidad} x L ${producto.precio.toFixed(2)}`);
   }
   total = aplicarDescuento(total, cliente);
   total = Math.round((total + total * TASA_ISV) * FACTOR_REDONDEO) / FACTOR_REDONDEO;
-  const venta = { cliente: cliente.nombre, total: total, detalle: detalle };
-  infra.guardar(venta);
-  infra.notificar(cliente.nombre, `Compra L ${total.toFixed(2)}`);
-  infra.imprimir(`Ticket ${cliente.nombre}: L ${total.toFixed(2)}`);
+  return { cliente: cliente.nombre, total, detalle };
+}
+
+function guardarVenta(venta, repositorio) { repositorio.guardar(venta); }
+function notificarCliente(venta, mensajeria) {
+  mensajeria.notificar(venta.cliente, `Compra L ${venta.total.toFixed(2)}`);
+}
+function imprimirTicket(venta, impresora) {
+  impresora.imprimir(`Ticket ${venta.cliente}: L ${venta.total.toFixed(2)}`);
+}
+
+function procesarVenta(pedido, cliente, servicios = infraestructuraPorDefecto) {
+  const venta = calcularVenta(pedido, cliente);
+  guardarVenta(venta, servicios);
+  notificarCliente(venta, servicios);
+  imprimirTicket(venta, servicios);
   return venta;
 }
-module.exports = { procesarVenta: procesarVenta };
+module.exports = { procesarVenta, calcularVenta };
