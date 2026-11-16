@@ -20,6 +20,10 @@ function validarProducto(producto) {
     throw new Error('Producto inválido');
   }
 }
+function aplicarDescuento(total, cliente) {
+  if (cliente.frecuente !== true || total < UMBRAL_DESCUENTO) return total;
+  return total - total * TASA_DESCUENTO;
+}
 function procesarVenta(pedido, cliente) {
   validarPedido(pedido, cliente);
   let total = 0;
@@ -29,11 +33,7 @@ function procesarVenta(pedido, cliente) {
     total = total + producto.cantidad * producto.precio;
     detalle.push(`${producto.nombre}: ${producto.cantidad} x L ${producto.precio.toFixed(2)}`);
   }
-  if (cliente.frecuente === true) {
-    if (total >= UMBRAL_DESCUENTO) {
-      total = total - total * TASA_DESCUENTO;
-    }
-  }
+  total = aplicarDescuento(total, cliente);
   total = Math.round((total + total * TASA_ISV) * FACTOR_REDONDEO) / FACTOR_REDONDEO;
   const venta = { cliente: cliente.nombre, total: total, detalle: detalle };
   infra.guardar(venta);
