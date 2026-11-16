@@ -1,21 +1,27 @@
 // Refactor en proceso: paso 1, nombres con intención.
 const infra = require('./infraestructura');
-function procesarVenta(pedido, cliente) {
+function validarPedido(pedido, cliente) {
   if (!pedido || !Array.isArray(pedido.items)) {
     throw new Error('Pedido inválido');
   }
   if (!cliente || !cliente.nombre) {
     throw new Error('Cliente inválido');
   }
+}
+function validarProducto(producto) {
+  if (!producto || !producto.nombre || !Number.isInteger(producto.cantidad) || producto.cantidad <= 0) {
+    throw new Error('Producto inválido');
+  }
+  if (!Number.isFinite(producto.precio) || producto.precio < 0 || !Number.isInteger(producto.stock) || producto.stock < producto.cantidad) {
+    throw new Error('Producto inválido');
+  }
+}
+function procesarVenta(pedido, cliente) {
+  validarPedido(pedido, cliente);
   let total = 0;
   let detalle = [];
   for (const producto of pedido.items) {
-    if (!producto || !producto.nombre || !Number.isInteger(producto.cantidad) || producto.cantidad <= 0) {
-      throw new Error('Producto inválido');
-    }
-    if (!Number.isFinite(producto.precio) || producto.precio < 0 || !Number.isInteger(producto.stock) || producto.stock < producto.cantidad) {
-      throw new Error('Producto inválido');
-    }
+    validarProducto(producto);
     total = total + producto.cantidad * producto.precio;
     detalle.push(`${producto.nombre}: ${producto.cantidad} x L ${producto.precio.toFixed(2)}`);
   }
