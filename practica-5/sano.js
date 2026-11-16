@@ -1,5 +1,9 @@
 // Refactor en proceso: paso 1, nombres con intención.
 const infra = require('./infraestructura');
+const UMBRAL_DESCUENTO = 500;
+const TASA_DESCUENTO = 0.1;
+const TASA_ISV = 0.15;
+const FACTOR_REDONDEO = 100;
 function validarPedido(pedido, cliente) {
   if (!pedido || !Array.isArray(pedido.items)) {
     throw new Error('Pedido inválido');
@@ -26,11 +30,11 @@ function procesarVenta(pedido, cliente) {
     detalle.push(`${producto.nombre}: ${producto.cantidad} x L ${producto.precio.toFixed(2)}`);
   }
   if (cliente.frecuente === true) {
-    if (total >= 500) {
-      total = total - total * 0.1;
+    if (total >= UMBRAL_DESCUENTO) {
+      total = total - total * TASA_DESCUENTO;
     }
   }
-  total = Math.round((total + total * 0.15) * 100) / 100;
+  total = Math.round((total + total * TASA_ISV) * FACTOR_REDONDEO) / FACTOR_REDONDEO;
   const venta = { cliente: cliente.nombre, total: total, detalle: detalle };
   infra.guardar(venta);
   infra.notificar(cliente.nombre, `Compra L ${total.toFixed(2)}`);
