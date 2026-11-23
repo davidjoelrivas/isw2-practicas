@@ -18,4 +18,4 @@ Alumno: David Joel Rivas Ortega
 - Cada diagrama incluye cinco lineas de justificacion de dos decisiones y sus atributos de calidad.
 - Nota de correcciones al borrador asistido por IA incluida en ese mismo archivo.
 - Pendiente: verificar visualmente el renderizado de ambos diagramas en GitHub.
-- **Codigo de verificacion Fase 0:** pendiente de copiar desde la plataforma del curso; no debe inventarse.
+- **Token de propiedad (Fase 0): `LEARN-CAP-00A9235F`**.
